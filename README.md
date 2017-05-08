@@ -1,8 +1,8 @@
-#Cucumber reports
+# Cucumber reports
 Project Cucumber reports is reporting tool for tests written in Cucumber framework see https://cucumber.io/.
 Reports are presented via web application.
 
-#Main idea
+## Main idea
 The main idea of this project is to store results of executed Cucumber tests to DB. 
 Results are send after each tested feature to REST API, where are results grouped 
 and persisted to [MongoDB](https://www.mongodb.com/).
