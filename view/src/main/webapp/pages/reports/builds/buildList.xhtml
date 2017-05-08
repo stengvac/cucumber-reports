@@ -1,0 +1,35 @@
+<ui:composition template="/WEB-INF/templates/reports/reports_template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        #{i18n_buildDetail['pagetitle']}
+    </ui:define>
+
+    <ui:define name="content">
+        <h1>#{i18n_buildList['buildList.h1']}</h1>
+
+        <p:dataTable value="#{buildListBean.presentations}" styleClass="table" var="buildPres">
+            <p:column headerText="#{i18n_common['build.name']}" styleClass="text-#{booleanToCssConverter.convert(buildPres.passed)}">
+                <h:outputText value="#{buildPres.metadata.projectName}" />
+            </p:column>
+
+            <p:column headerText="#{i18n_common['build.number']}">
+                <h:outputText value="#{buildPres.metadata.sequentialNumber}" />
+            </p:column>
+
+            <p:column headerText="#{i18n_common['build.at']}">
+                <h:outputText value="#{buildPres.metadata.buildAt}" />
+            </p:column>
+
+            <p:column headerText="#{i18n_common['to.detail']}">
+                <h:link outcome="toDetail" value="#{i18n_common['to.detail']}">
+                    <f:param name="buildId" value="#{buildPres.buildId}" />
+                </h:link>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

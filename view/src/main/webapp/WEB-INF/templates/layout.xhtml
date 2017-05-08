@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+
+<f:view encoding="UTF-8">
+    <h:head>
+        <title><ui:insert name="title">Cucumber</ui:insert></title>
+
+        <!-- BOOTSTRAP -->
+        <h:outputStylesheet library="css" name="bootstrap.min.css"/>
+        <h:outputStylesheet library="css" name="bootstrap-theme.min.css"/>
+        <h:outputScript library="js" name="bootstrap.min.js"/>
+
+        <ui:insert name="css"/>
+        <ui:insert name="js"/>
+    </h:head>
+
+    <h:body>
+        <p:importConstants type="cz.airbank.cucumber.reports.view.CommonOutcomes"
+                           var="commonOutcomes"/>
+        <p:importConstants type="cz.airbank.cucumber.reports.view.admin.bean.AppConfigurationBean"
+                           var="configConstants"/>
+
+        <f:facet name="last">
+            <h:outputStylesheet name="css/main.css"/>
+        </f:facet>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <p:link outcome="#{commonOutcomes.INDEX_OUTCOME}" class="navbar-brand">Index</p:link>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class=" navbar-right">
+                        <ul class="nav navbar-nav">
+                            <ui:insert name="right-menu"/>
+                            <ui:insert name="search"/>
+                        </ul>
+                    </div>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <div class="container-fluid">
+            <p:messages id="globalErrorMessages" autoUpdate="true" closable="true"/>
+            <ui:insert name="content"><p>Template Content</p></ui:insert>
+        </div>
+
+        <div class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+                <div class="navbar-text pull-left">
+                    <strong>#{i18n_common['application.welcome']}</strong>
+                    #{i18n_version['project.version.label']} #{i18n_version['project.version']}
+                    #{i18n_version['project.build_at.label']} #{i18n_version['project.build-time']}
+                </div>
+                <div class="navbar-text pull-right">
+                    <strong>
+                        <p:link value="#{i18n_common['contacts.label']}"
+                                styleClass="text-header"
+                                outcome="#{commonOutcomes.CONTACTS_OUTCOME}"/>
+                    </strong>
+                    |
+                    <strong>
+                        <p:link value="#{i18n_common['config.label']}"
+                                styleClass="text-header"
+                                outcome="#{configConstants.APP_CONFIG_OUTCOME}"/>
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </h:body>
+</f:view>
+</html>

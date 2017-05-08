@@ -1,0 +1,28 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <p:importConstants type="cz.airbank.cucumber.reports.view.CommonOutcomes"
+                           var="commonContants" />
+
+        <div class="col-md-offset-4">
+            <h1>#{i18n_errors['error.500.h1']}</h1>
+
+            #{i18n_errors['error.500.message']}
+            <strong>
+                <p:link value="#{i18n_errors['error.404.back_to.link']}"
+                        outcome="#{commonContants.INDEX_OUTCOME}"/>
+            </strong>
+            <br/>
+            <br/>
+
+            #{i18n_errors['error.contact_us']}
+            <p:link value="#{i18n_common['contacts.label']}"
+                    outcome="#{commonContants.CONTACTS_OUTCOME}"/>
+            #{i18n_errors['error.notify_us']}
+        </div>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,123 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        #{i18n_statistics['pagetitle']}
+    </ui:define>
+
+    <ui:define name="content">
+        <h1><h:outputText value="#{i18n_statistics['page.header']}"/></h1>
+        <p><h:outputText value="#{i18n_statistics['table.result.description']}"/></p>
+
+        <p:dataTable value="#{statisticsOverviewBean.resultsStatisticsModels}"
+                     var="resultsStatisticsModel"
+                     tableStyleClass="table"
+                     rowStyleClass="#{resultsStatisticsModel.featureFailedCount > 0 ? 'danger' : 'passed'}">
+            <p:columnGroup type="header">
+                <p:row>
+                    <p:column headerText="#{i18n_common['moduleName']}" styleClass="col-md-8"/>
+                    <p:column colspan="2" headerText="#{i18n_statistics['table.features']}" styleClass="col-md-2"/>
+                    <p:column colspan="2" headerText="#{i18n_statistics['table.scenarios']}" styleClass="col-md-2"/>
+                </p:row>
+
+                <p:row>
+                    <p:column headerText=""/>
+                    <p:column headerText="#{i18n_common['total']}"/>
+                    <p:column styleClass="passedHeader" headerText="#{i18n_statistics['table.passed']}"/>
+
+                    <p:column headerText="#{i18n_common['total']}"/>
+                    <p:column styleClass="passedHeader" headerText="#{i18n_statistics['table.passed']}"/>
+                </p:row>
+            </p:columnGroup>
+
+            <p:columnGroup type="footer">
+                <p:row>
+                    <p:column footerText="#{i18n_common['total']}"/>
+
+                    <p:column
+                            footerText="#{statisticsOverviewBean.resultsStatisticsTotalModel.computeTotalFeatureCount()}"/>
+                    <p:column footerText="#{statisticsOverviewBean.resultsStatisticsTotalModel.featurePassedCount}"/>
+
+                    <p:column
+                            footerText="#{statisticsOverviewBean.resultsStatisticsTotalModel.computeTotalScenarioCount()}"/>
+                    <p:column footerText="#{statisticsOverviewBean.resultsStatisticsTotalModel.scenarioPassedCount}"/>
+                </p:row>
+            </p:columnGroup>
+
+            <p:column>
+                #{resultsStatisticsModel.moduleName}
+            </p:column>
+
+            <ui:param name="totalFeatureCount"
+                      value="#{resultsStatisticsModel.computeTotalFeatureCount()}"/>
+
+            <p:column>
+                #{totalFeatureCount}
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{resultsStatisticsModel.featurePassedCount}" styleClass="text-success"/>
+                / <h:outputText value="#{resultsStatisticsModel.featureFailedCount} " styleClass="text-danger"/>
+
+                <h:outputText value="#{resultsStatisticsModel.featurePassedCount / totalFeatureCount}" styleClass="text-success">
+                    <f:convertNumber pattern="#{config['format.percentage']}"/>
+                </h:outputText>
+            </p:column>
+
+            <ui:param name="totalScenarioCount"
+                      value="#{resultsStatisticsModel.computeTotalScenarioCount()}"/>
+
+            <p:column>
+                #{totalScenarioCount}
+            </p:column>
+
+            <p:column>
+                #{resultsStatisticsModel.scenarioPassedCount} / #{resultsStatisticsModel.scenarioTotalCount - resultsStatisticsModel.scenarioPassedCount}
+
+                <h:outputText value="#{resultsStatisticsModel.scenarioPassedCount / totalScenarioCount}">
+                    <f:convertNumber pattern="#{config['format.percentage']}"/>
+                </h:outputText>
+            </p:column>
+
+        </p:dataTable>
+
+        <p><h:outputText value="#{i18n_statistics['table.definition.description']}" /></p>
+        <p:dataTable value="#{statisticsOverviewBean.definitionsStatisticsModels}"
+                     var="count"
+                     tableStyleClass="table">
+
+            <p:columnGroup type="header">
+                <p:row>
+                    <p:column headerText="#{i18n_common['moduleName']}" styleClass="col-md-4"/>
+                    <p:column headerText="#{i18n_statistics['table.featureCount']}"/>
+                    <p:column headerText="#{i18n_statistics['table.scenarioCount']}"/>
+                </p:row>
+            </p:columnGroup>
+
+            <p:columnGroup type="footer">
+                <p:row>
+                    <p:column footerText="#{i18n_common['total']}"/>
+                    <p:column footerText="#{statisticsOverviewBean.definitionsStatisticsTotalModel.featureCount}"/>
+                    <p:column footerText="#{statisticsOverviewBean.definitionsStatisticsTotalModel.scenarioCount}"/>
+                </p:row>
+            </p:columnGroup>
+
+            <p:column>
+                <h:outputText value="#{count.moduleName}"/>
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{count.featureCount}"/>
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{count.scenarioCount}"/>
+            </p:column>
+        </p:dataTable>
+
+    </ui:define>
+</ui:composition>

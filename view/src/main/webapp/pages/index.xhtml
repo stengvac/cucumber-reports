@@ -1,0 +1,42 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <p:importConstants type="cz.airbank.cucumber.reports.view.reports.bean.ReportsOverviewBean"
+                           var="reportsConstants" />
+        <p:importConstants type="cz.airbank.cucumber.reports.view.statistics.bean.StatisticsOverviewBean"
+                           var="statisticsConstants" />
+
+        <div class="page-header">
+            <h1><h:outputText value="#{i18n_common['application.welcome']}"/></h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <p:link outcome="#{reportsConstants.OVERVIEW_OUTCOME}">
+                    <div class="row">
+                        <h2 class="text-header">
+                            <h:outputText value="#{i18n_common['reports']}"/>
+                        </h2>
+                    </div>
+                    <i class="text-header fa fa-file-text-o fa-welcome-icons" aria-hidden="true"></i>
+                </p:link>
+            </div>
+
+            <div class="col-md-6 text-center">
+                <p:link outcome="#{statisticsConstants.OVERVIEW_OUTCOME}">
+                    <div class="row">
+                        <h2 class="text-header">
+                            <h:outputText value="#{i18n_common['statistics']}"/>
+                        </h2>
+                    </div>
+                    <i class="text-header fa fa-bar-chart fa-welcome-icons" aria-hidden="true"></i>
+                </p:link>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>

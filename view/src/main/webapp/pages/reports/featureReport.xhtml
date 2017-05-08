@@ -1,0 +1,358 @@
+<ui:composition template="/WEB-INF/templates/reports/reports_template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:importConstants type="cz.airbank.cucumber.reports.view.reports.bean.FeatureReportBean"
+                       var="featureReportParams"/>
+
+    <ui:define name="title">
+        #{i18n_report['page.title']}
+    </ui:define>
+
+    <ui:define name="js">
+        <h:outputScript library="js" name="featureReport.js"/>
+    </ui:define>
+
+    <ui:define name="right-menu">
+        <li>
+            <p:link outcome="featureReport" value="#{i18n_report['feature.prev']}"/>
+        </li>
+        <li>
+            <p:link outcome="featureReport" value="#{i18n_report['feature.next']}"/>
+        </li>
+    </ui:define>
+
+    <ui:define name="content">
+        <h1 class="text-#{booleanToCssConverter.convert(featureReportBean.featureMetadata.passed())}">
+            #{i18n_report['feature.name']}: #{featureReportBean.featureReport.name}
+        </h1>
+        #{i18n_common['build.name']}:
+        #{featureReportBean.buildRunMetadata.projectName}
+        (#{featureReportBean.buildRunMetadata.sequentialNumber}),#{featureReportBean.buildRunMetadata.buildAt}
+
+        <dl class="dl-horizontal">
+            <dt>#{i18n_report['file.name']}</dt>
+            <dd>#{featureReportBean.featureMetadata.filename}</dd>
+            <dt>#{i18n_report['feature.glue']}</dt>
+            <dd>#{featureReportBean.featureMetadata.glue}</dd>
+        </dl>
+        <p class="line-breaks">
+            #{featureReportBean.featureReport.description}
+        </p>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div id="scenarioNames" class="col-md-3">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="" id="showFailedOnly"/>
+                        #{i18n_report['checkbox.show.only.failed']}
+                    </label>
+                    <label>
+                        <input type="checkbox" value="" id="showBackgrounds"/>
+                        #{i18n_report['checkbox.show.backgrounds']}
+                    </label>
+                    <label>
+                        <input type="checkbox" value="" id="showHooks"/>
+                        #{i18n_report['checkbox.show.hooks']}
+                    </label>
+                </div>
+                <ul class="list-group" style="overflow: auto; height: 350px">
+                    <ui:repeat value="#{featureReportBean.featureReport.scenarioDefinitionList}" var="scenarioDef">
+                        <li class="list-group-item text-#{booleanToCssConverter.convert(scenarioDef.isSuccess())} bold">
+                            <h:outputText rendered="#{scenarioDef.isScenarioOutline()}" value="#{scenarioDef.name}"/>
+
+                            <ul class="list-group">
+                                <ui:repeat value="#{scenarioDef.scenarioRunReports}" var="scenarioRun">
+                                    <li class="list-group-item text-#{booleanToCssConverter.convert(scenarioRun.isRunSuccessful())}">
+                                        <span class="badge">#{scenarioRun.computeStepsPassed()}/#{scenarioRun.computeTotalStepsCount()}</span>
+                                        <p:link styleClass="text-#{booleanToCssConverter.convert(scenarioRun.isRunSuccessful())}"
+                                                href="##{featureReportBean.getScenarioRunId(scenarioRun.runIndex)}"
+                                                value="#{scenarioRun.name}"/>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+
+                        </li>
+                    </ui:repeat>
+                </ul>
+                </div>
+            </div>
+            <div class="col-md-9" id="scenarioReports">
+                <ui:repeat value="#{featureReportBean.featureReport.scenarioDefinitionList}" var="scenarioDef">
+                    <ui:repeat value="#{scenarioDef.scenarioRunReports}" var="scenarioRun" varStatus="runStatus">
+                        <!-- Runs of one scenario definition - tests -->
+
+                        <!--<p class="line-breaks">-->
+                            <!--#{scenarioDef.commentList}-->
+                        <!--</p>-->
+                        <div id="#{featureReportBean.getScenarioRunId(scenarioRun.runIndex)}"
+                             class="bs-callout bs-callout-#{booleanToCssConverter.convert(scenarioRun.isRunSuccessful())}">
+                            <h:form>
+                                <!-- Show images if present -->
+                                <p:commandButton rendered="#{featureReportBean.renderShowPicturesButton(scenarioRun)}"
+                                                 action="#{featureReportBean.setImagesIncluded(true)}"
+                                                 update="@form"
+                                                 value="#{i18n_report['button.include.images']}">
+                                    <f:param name="#{featureReportParams.BUILD_ID_PARAM_NAME}"
+                                             value="#{featureReportBean.featureReport.buildRunMetadataWithId.id}"/>
+                                    <f:param name="#{featureReportParams.TEST_SUITE_PARAM_NAME}"
+                                             value="#{featureReportBean.featureReport.testSuiteMetadataWithId.id}"/>
+                                    <f:param name="#{featureReportParams.FEATURE_ID_PARAM_NAME}"
+                                             value="#{featureReportBean.featureReport.buildRunMetadataWithId.id}"/>
+                                </p:commandButton>
+
+                                <h1>#{scenarioRun.name}</h1>
+
+                                <dl class="dl-horizontal">
+                                    <dt>#{i18n_report['feature.definition.type']}</dt>
+                                    <dd>#{scenarioDef.isScenarioOutline()}</dd>
+                                    <dt>#{i18n_report['feature.definition.run.index']}</dt>
+                                    <dd>#{runStatus.index + 1} / #{scenarioDef.scenarioRunReports.size()}</dd>
+                                    <dt>#{i18n_report['feature.description']}</dt>
+                                    <dd>#{scenarioDef.description}</dd>
+                                    <dt>#{i18n_report['feature.scenario.tags']}</dt>
+                                    <dd>
+                                        <ui:repeat value="#{scenarioDef.tagList}" var="tag">
+                                            <span class="label label-default">#{tag.statement}</span>
+                                        </ui:repeat>
+                                    </dd>
+                                    <dt>#{i18n_report['feature.examples.tags']}</dt>
+                                    <dd>
+                                        <ui:repeat value="#{scenarioDef.examples.tagList}" var="tag">
+                                            <span class="label label-default">#{tag.statement}</span>
+                                        </ui:repeat>
+                                    </dd>
+                                </dl>
+
+                                <!-- Background -->
+                                <h:panelGroup layout="block" styleClass="background"
+                                              rendered="#{featureReportBean.featureReport.background != null}">
+                                    <h2>#{i18n_report['feature.background']}: #{featureReportBean.featureReport.background.name}</h2>
+
+                                    <h:panelGroup layout="block" styleClass="row"
+                                                  rendered="#{not featureReportBean.featureReport.background.tagList.isEmpty()}">
+                                        <strong>#{i18n_report['feature.tags']}:</strong>
+                                        <ui:repeat value="#{featureReportBean.featureReport.background.tagList}" var="tag">
+                                            <span class="label label-default">#{tag}</span>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+
+                                    <dl class="dl-horizontal">
+                                        <dt>#{i18n_report['feature.name']}</dt>
+                                        <dd>#{featureReportBean.featureReport.background.name}</dd>
+                                        <dt>#{i18n_report['feature.description']}</dt>
+                                        <dd>#{featureReportBean.featureReport.background.description}</dd>
+                                    </dl>
+                                </h:panelGroup>
+
+                                <h2>#{i18n_report['feature.steps']}</h2>
+
+                                <!-- Before hooks -->
+                                <h:panelGroup layout="block"
+                                              styleClass="hooks"
+                                              rendered="#{not scenarioRun.beforeHookStepResults.isEmpty()}">
+                                    <h3>
+                                        <small>#{i18n_report['feature.before.hooks']}</small>
+                                    </h3>
+
+                                    <ui:repeat value="#{scenarioRun.beforeHookStepResults}" var="beforeHook">
+                                        <div class="col-sm-1 text-right">
+                                            <strong>#{i18n_report['feature.hook.before']}</strong>
+                                        </div>
+                                        <div class="col-sm-offset-1">
+                                            <h:outputText
+                                                    styleClass="text-#{stepResultToCssClassConverter.convert(beforeHook)}"
+                                                    value="#{featureReportBean.createFullHookLocation(beforeHook)}"/>
+                                            (<h:outputText value="#{beforeHook.duration}"
+                                                           converter="durationConverter"/>)
+
+                                            <h:panelGroup layout="block" rendered="#{beforeHook.errorMessage != null}">
+                                            <pre>
+                                                 <p:link value="#{i18n_report['console']}"
+                                                         href="#{featureReportBean.createConsoleLink()}"
+                                                         target="_blank"/>
+                                                 <h:outputText value="#{beforeHook.errorMessage}"/>
+                                            </pre>
+                                            </h:panelGroup>
+
+                                            <ui:repeat value="#{beforeHook.embeddingList}" var="imgId">
+                                                <p:graphicImage value="#{imageBean.image}">
+                                                    <f:param name="#{imageBean.imageIdParamName}" value="#{imgId}"/>
+                                                </p:graphicImage>
+                                            </ui:repeat>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
+
+                                <!-- Background steps -->
+                                <h:panelGroup layout="block"
+                                              rendered="#{not scenarioRun.backgroundStepResults.isEmpty()}"
+                                              styleClass="background">
+                                    <h3>
+                                        <small>#{i18n_report['feature.background.steps']}</small>
+                                    </h3>
+
+                                    <ui:repeat value="#{scenarioRun.backgroundStepResults}" var="backgroundStepResult">
+                                        <div class="row">
+                                            <h:panelGroup styleClass="col-sm-offset-1"
+                                                          rendered="#{backgroundStepResult.definitionReport.stepDataTable != null}"
+                                                          layout="block">
+                                                <!-- Data table under step -->
+                                                <p:dataTable var="stepData"
+                                                             value="#{backgroundStepResult.definitionReport.stepDataTable.dataRowList}">
+                                                    <p:columns
+                                                            value="#{backgroundStepResult.definitionReport.stepDataTable.headers.valueList}"
+                                                            var="column" columnIndexVar="colIndex">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="#{column}"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{stepData.valueList.get(colIndex)}"/>
+                                                    </p:columns>
+                                                </p:dataTable>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="col-sm-1 text-right">
+                                            <strong>#{backgroundStepResult.definitionReport.keyword}</strong>
+                                        </div>
+                                        <div class="col-sm-offset-1">
+                                            <!-- Background step -->
+                                            <h:outputText
+                                                    styleClass="text-#{stepResultToCssClassConverter.convert(backgroundStepResult)}"
+                                                    escape="false"
+                                                    value="#{textEnhanceBean.resolveStepName(backgroundStepResult)}"/>
+                                            (<h:outputText value="#{backgroundStepResult.duration}"
+                                                           converter="durationConverter"/>)
+                                            <h:panelGroup layout="block"
+                                                          rendered="#{backgroundStepResult.errorMessage != null}">
+                                            <pre>
+                                                 <p:link value="#{i18n_report['console']}"
+                                                         href="#{featureReportBean.createConsoleLink()}"
+                                                         target="_blank"/>
+                                                 <h:outputText value="#{stepResult.errorMessage}"/>
+                                            </pre>
+                                            </h:panelGroup>
+                                            <!-- Background images -->
+                                            <h:panelGroup layout="block" rendered="#{featureReportBean.imagesIncluded}">
+                                                <ui:repeat value="#{backgroundStepResult.embeddingList}" var="imgId">
+                                                    <p:graphicImage value="#{imageBean.image}">
+                                                        <f:param name="#{imageBean.imageIdParamName}" value="#{imgId}"/>
+                                                    </p:graphicImage>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
+
+                                <!-- Scenario steps -->
+                                <h3>
+                                    <small>#{i18n_report['feature.scenario.steps']}</small>
+                                </h3>
+                                <!-- TODO Duplicated section background and scenario steps move to file and include -->
+                                <ui:repeat value="#{scenarioRun.scenarioStepResults}" var="scenarioStepResult">
+                                    <div class="row">
+                                        <div class="row">
+                                            <h:panelGroup styleClass="col-sm-offset-1"
+                                                          rendered="#{scenarioStepResult.definitionReport.stepDataTable != null}"
+                                                          layout="block">
+                                                <!-- Data table after step -->
+                                                <p:dataTable var="stepData"
+                                                             value="#{scenarioStepResult.definitionReport.stepDataTable.dataRowList}">
+                                                    <p:columns
+                                                            value="#{scenarioStepResult.definitionReport.stepDataTable.headers.valueList}"
+                                                            var="column" columnIndexVar="colIndex">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="#{column}"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{stepData.valueList.get(colIndex)}"/>
+                                                    </p:columns>
+                                                </p:dataTable>
+                                            </h:panelGroup>
+                                        </div>
+
+                                        <div class="col-sm-1 text-right">
+                                            <strong>#{scenarioStepResult.definitionReport.keyword}</strong>
+                                        </div>
+
+                                        <!-- Scenario steps -->
+                                        <div class="col-sm-offset-1">
+                                            <h:outputText
+                                                    styleClass="text-#{stepResultToCssClassConverter.convert(scenarioStepResult)}"
+                                                    escape="false"
+                                                    value="#{textEnhanceBean.resolveStepName(scenarioStepResult)}"/>
+                                            (<h:outputText value="#{scenarioStepResult.duration}"
+                                                           converter="durationConverter"/>)
+
+                                            <h:panelGroup layout="block"
+                                                          rendered="#{scenarioStepResult.errorMessage != null}">
+                                            <pre>
+                                                 <p:link value="#{i18n_report['console']}"
+                                                         href="#{featureReportBean.createConsoleLink()}"
+                                                         target="_blank"/>
+                                                 <h:outputText value="#{scenarioStepResult.errorMessage}"/>
+                                            </pre>
+                                            </h:panelGroup>
+
+                                            <!-- Step images -->
+                                            <h:panelGroup layout="block" rendered="#{featureReportBean.imagesIncluded}">
+                                                <ui:repeat value="#{scenarioStepResult.embeddingList}" var="imgId">
+                                                    <p:graphicImage value="#{imageBean.image}">
+                                                        <f:param name="#{imageBean.imageIdParamName}" value="#{imgId}"/>
+                                                    </p:graphicImage>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+
+                                <!-- After hooks -->
+                                <h:panelGroup layout="block"
+                                              styleClass="hooks"
+                                              rendered="#{not scenarioRun.afterHookStepResults.isEmpty()}">
+                                    <h3>
+                                        <small>#{i18n_report['feature.after.hooks']}</small>
+                                    </h3>
+
+                                    <ui:repeat value="#{scenarioRun.afterHookStepResults}" var="afterHook">
+                                        <div class="col-sm-1 text-right">
+                                            <strong>#{i18n_report['feature.hook.after']}</strong>
+                                        </div>
+                                        <div class="col-sm-offset-1">
+                                            <h:outputText
+                                                    styleClass="text-#{stepResultToCssClassConverter.convert(afterHook)}"
+                                                    value="#{featureReportBean.createFullHookLocation(afterHook)}"/>
+                                            (<h:outputText value="#{afterHook.duration}" converter="durationConverter"/>)
+
+                                            <!-- Error message -->
+                                            <h:panelGroup layout="block" rendered="#{afterHook.errorMessage != null}">
+                                            <pre>
+                                                <p:link value="#{i18n_report['console']}"
+                                                        href="#{featureReportBean.createConsoleLink()}"
+                                                        target="_blank"/>
+                                                <h:outputText value="#{afterHook.errorMessage}"/>
+                                            </pre>
+                                            </h:panelGroup>
+
+                                            <!-- Images -->
+                                            <h:panelGroup layout="block" rendered="#{featureReportBean.imagesIncluded}">
+                                                <ui:repeat value="#{afterHook.embeddingList}" var="imgId">
+                                                    <p:graphicImage value="#{imageBean.image}">
+                                                        <f:param name="#{imageBean.imageIdParamName}" value="#{imgId}"/>
+                                                    </p:graphicImage>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
+
+                            </h:form>
+                        </div>
+                    </ui:repeat>
+                </ui:repeat>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,85 @@
+<ui:composition template="/WEB-INF/templates/reports/reports_template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <ui:define name="title">
+        #{i18n_reports['pagetitle']}
+    </ui:define>
+
+    <ui:define name="content">
+        <p:importConstants var="buildDetailConstants"
+                           type="cz.airbank.cucumber.reports.view.reports.bean.BuildDetailBean"/>
+        <p:importConstants var="testSuiteDetailConstants"
+                           type="cz.airbank.cucumber.reports.view.reports.bean.TestSuiteBean"/>
+
+        <h1>#{i18n_reports['latest.reports']}</h1>
+        <p>#{i18n_reports['latest.reports.description']}</p>
+
+        <ui:repeat value="#{reportsOverviewBean.projectsWithRuns}" var="projectWithRuns">
+            <div class="bs-callout">
+                <h1>
+                    <small><strong class="text-header">#{i18n_reports['project.name']}: </strong>
+                        <h:outputText value="#{projectWithRuns.projectName}"/>
+                    </small>
+                </h1>
+
+                <p:dataTable value="#{projectWithRuns.buildRunWithCountsList}" var="buildWithCounts"
+                             styleClass="table table-stripped">
+                    <ui:param name="testPassedRatio"
+                              value="#{reportsOverviewBean.computeTestsPassedRatio(buildWithCounts)}"/>
+                    <p:column headerText="#{i18n_reports['project.result']}">
+                        <i class="fa fa-thumbs-#{testPassedRatio >= 0.5 ? 'o-up' : 'o-down'}
+                                  text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}"
+                           aria-hidden="true"/>
+                        #{" "}
+                        <h:outputText value="#{testPassedRatio}"
+                                      converter="#{percentageConverter}"
+                                      styleClass="bold text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}">
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column headerText="#{i18n_reports['project.link']}" colspan="6">
+                        <!-- When build detail contains multiple test suites redirect to list so user can chose themself-->
+                        <p:link rendered="#{not buildWithCounts.containsOnlyOneTestSuite()}"
+                                outcome="#{buildDetailConstants.BUILD_DETAIL_OUTCOME}"
+                                styleClass="bold text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}">
+                            <h:outputText
+                                    value="#{projectWithRuns.projectName} - #{buildWithCounts.metadataWithId.metadata.sequentialNumber}"/>
+                            <f:param name="#{buildDetailConstants.BUILD_ID_PARAM_NAME}"
+                                     value="#{buildWithCounts.metadataWithId.id}"/>
+                        </p:link>
+                        <!-- When build detail contains only one test suite redirect to test suite detail. -->
+                        <p:link rendered="#{buildWithCounts.containsOnlyOneTestSuite()}"
+                                outcome="#{testSuiteDetailConstants.TEST_SUITE_REPORT_OUTCOME}"
+                                styleClass="bold text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}">
+                            <h:outputText
+                                    value="#{projectWithRuns.projectName} - #{buildWithCounts.metadataWithId.metadata.sequentialNumber}"/>
+                            <f:param name="#{testSuiteDetailConstants.BUILD_ID_PARAM_NAME}"
+                                     value="#{buildWithCounts.metadataWithId.id}"/>
+                            <f:param name="#{testSuiteDetailConstants.TEST_SUITE_PARAM_NAME}"
+                                     value="#{buildWithCounts.getIdOfFirstTestSuite()}"/>
+                        </p:link>
+                    </p:column>
+
+                    <p:column headerText="#{i18n_common['build.at']}">
+                        <h:outputText value="#{buildWithCounts.metadataWithId.metadata.buildAt}"
+                                      converter="#{dateTimeConverter}"/>
+                    </p:column>
+
+                    <p:column headerText="#{i18n_common['executed.by']}">
+                        #{buildWithCounts.metadataWithId.metadata.executedBy}
+                    </p:column>
+
+                    <p:column headerText="#{i18n_common['environment']}">
+                        #{buildWithCounts.metadataWithId.metadata.environmentName}
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </ui:repeat>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,39 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="content">
+        <h1>#{i18n_errors['error.exception.h1']}</h1>
+        <strong>#{i18n_errors['error.exception.message']} <i class="fa fa-frown-o" aria-hidden="true"></i></strong>
+
+
+        <strong>#{i18n_errors['error.exception.byebye']}</strong>
+
+        <h:panelGroup layout="block"
+                      rendered="#{exceptionBean.inDevelopmentStage}">
+            <div class="row">
+                User agent: #{header['user-agent']}
+            </div>
+
+            <div class="row">
+                Referer URL: #{exceptionBean.getRefererUrl()}
+            </div>
+
+            <div class="row">
+                Ajax request: #{facesContext.partialViewContext.ajaxRequest ? 'Yes' : 'No'}
+            </div>
+
+            <div class="row">
+                Exception type: #{pfExceptionHandler.exception.getClass()}
+            </div>
+
+            <div class="row">
+                Stack trace:
+                <pre>
+                    <h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false"/>
+                </pre>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

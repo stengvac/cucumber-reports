@@ -1,0 +1,102 @@
+<ui:composition template="/WEB-INF/templates/reports/reports_template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:define name="title">
+        #{i18n_buildDetail['pagetitle']}
+    </ui:define>
+
+    <ui:define name="js">
+        <h:outputScript library="js" name="hidePassedFeatures.js"/>
+    </ui:define>
+
+    <ui:define name="right-menu">
+        <p:importConstants type="cz.airbank.cucumber.reports.view.reports.bean.BuildDetailBean"
+                           var="buildDetailConstants"/>
+
+        <li>
+            <p:link rendered="#{buildDetailBean.buildRunReport.previousBuildRunWithId != null}"
+                    outcome="#{buildDetailConstants.BUILD_DETAIL_OUTCOME}"
+                    value="#{i18n_buildDetail['build.detail.prev']}">
+                <f:param name="#{buildDetailConstants.BUILD_ID_PARAM_NAME}"
+                         value="#{buildDetailBean.buildRunReport.previousBuildRunWithId.id}"/>
+            </p:link>
+        </li>
+        <li>
+            <p:link rendered="#{buildDetailBean.buildRunReport.nextMetadataWithId != null}"
+                    outcome="#{buildDetailConstants.BUILD_DETAIL_OUTCOME}"
+                    value="#{i18n_buildDetail['build.detail.next']}">
+                <f:param name="#{buildDetailConstants.BUILD_ID_PARAM_NAME}"
+                         value="#{buildDetailBean.buildRunReport.nextMetadataWithId.id}"/>
+            </p:link>
+        </li>
+    </ui:define>
+
+    <ui:define name="content">
+        <p:importConstants type="cz.airbank.cucumber.reports.view.reports.bean.TestSuiteBean"
+                           var="testSuiteConstants"/>
+
+        <h1>
+            <h:outputText value="#{i18n_buildDetail['heading']}"/>:
+            #{buildDetailBean.buildRunMetadata.projectName}
+            (#{buildDetailBean.buildRunMetadata.sequentialNumber})
+        </h1>
+        <p><h:outputText value="#{i18n_buildDetail['page.description']}"/></p>
+
+        <dl class="dl-horizontal">
+            <dt>#{i18n_common['build.at']}</dt>
+            <dd><h:outputText value="#{buildDetailBean.buildRunMetadata.buildAt}"
+                              converter="#{dateTimeConverter}"/>
+            </dd>
+
+            <dt>#{i18n_common['executed.by']}</dt>
+            <dd>#{buildDetailBean.buildRunMetadata.executedBy}</dd>
+
+            <dt>#{i18n_common['environment']}</dt>
+            <dd>#{buildDetailBean.buildRunMetadata.environmentName}</dd>
+
+            <dt>#{i18n_common['build.tags']}</dt>
+            <dd>#{buildDetailBean.buildRunMetadata.tags}</dd>
+        </dl>
+
+        <p:dataTable value="#{buildDetailBean.buildRunReport.testSuiteWithFeaturesMetadata}" var="testSuite">
+
+            <ui:param name="testSuitePassed" value="#{testSuite.passed()}"/>
+            <ui:param name="testPassedRatio" value="#{buildDetailBean.computeTestsPassedRatio(testSuite)}" />
+
+            <p:column headerText="#{i18n_buildDetail['build.detail.result']}" >
+                <i class="fa fa-thumbs-#{testPassedRatio >= 0.5 ? 'o-up' : 'o-down'}
+                                  text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}"
+                   aria-hidden="true"/>
+                <h:outputText value=" #{testPassedRatio * 100} % "
+                              styleClass="bold text-#{testsPassedRatio2ThumbColorConverter.convert(testPassedRatio)}">
+                    <f:convertNumber pattern="#{config['format.percentage']}"/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="#{i18n_buildDetail['build.detail.testSuite']}">
+                <!--TODO which param use as test suite name?-->
+                <p:link value="Test suite - #{testSuite.testSuiteMetadataWithId.metadata.sequentialNumber}"
+                        outcome="#{testSuiteConstants.TEST_SUITE_REPORT_OUTCOME}"
+                        styleClass="bold text-#{booleanToCssConverter.convert(testSuitePassed)}">
+                    <f:param name="#{testSuiteConstants.TEST_SUITE_PARAM_NAME}"
+                             value="#{testSuite.testSuiteMetadataWithId.id}"/>
+                    <f:param name="#{testSuiteConstants.BUILD_ID_PARAM_NAME}"
+                             value="#{buildDetailBean.buildRunReport.currentBuildRunWithId.id}"/>
+                </p:link>
+            </p:column>
+
+            <p:column headerText="#{i18n_buildDetail['build.detail.env.variables']}">
+                <ui:repeat value="#{presentationSupportBean.createMapPresentation(testSuite.testSuiteMetadataWithId.metadata.envVariables)}"
+                           var="envVar">
+                    <span class="label label-default">#{envVar}</span>
+                </ui:repeat>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+
+</ui:composition>

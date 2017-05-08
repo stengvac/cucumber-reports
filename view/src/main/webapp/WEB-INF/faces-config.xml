@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd"
+              version="2.1">
+
+    <application>
+        <el-resolver>
+            org.springframework.web.jsf.el.SpringBeanFacesELResolver
+        </el-resolver>
+        <!--Resolve only pfExceptionHandler tag-->
+        <el-resolver>
+            org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver
+        </el-resolver>
+
+        <factory>
+            <exception-handler-factory>
+                cz.airbank.cucumber.reports.view.exceptionhandling.CucumberExceptionHandlerFactory
+            </exception-handler-factory>
+        </factory>
+
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>en</supported-locale>
+        </locale-config>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.config</base-name>
+            <var>config</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.common</base-name>
+            <var>i18n_common</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.buildDetail</base-name>
+            <var>i18n_buildDetail</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.reportsOverview</base-name>
+            <var>i18n_reports</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.statisticsOverview</base-name>
+            <var>i18n_statistics</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.featureReport</base-name>
+            <var>i18n_report</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.errors</base-name>
+            <var>i18n_errors</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.contacts</base-name>
+            <var>i18n_contacts</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.version</base-name>
+            <var>i18n_version</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.testSuite</base-name>
+            <var>i18n_testSuiteReport</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.buildList</base-name>
+            <var>i18n_buildList</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>config</base-name>
+            <var>i18n_config</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>cz.airbank.cucumber.reports.view.searchBuild</base-name>
+            <var>i18n_searchBuild</var>
+        </resource-bundle>
+    </application>
+
+    <navigation-rule>
+        <from-view-id>/pages/index.xhtml</from-view-id>
+
+        <navigation-case>
+            <from-outcome>toReportsOverview</from-outcome>
+            <to-view-id>/pages/reports/overview.xhtml</to-view-id>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>toStatisticsOverview</from-outcome>
+            <to-view-id>/pages/statistics/overview.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>toTestSuiteReport</from-outcome>
+            <to-view-id>/pages/reports/suite/detail.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>toFeatureReport</from-outcome>
+            <to-view-id>/pages/reports/featureReport.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/pages/index.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>contacts</from-outcome>
+            <to-view-id>/pages/about/contacts.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>toBuildList</from-outcome>
+            <to-view-id>/pages/reports/builds/buildList.xhtml</to-view-id>
+            <redirect>
+                <view-param>
+                    <name>buildName</name>
+                    <value>#{searchBean.buildName}</value>
+                </view-param>
+            </redirect>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>toBuildDetail</from-outcome>
+            <to-view-id>/pages/reports/build/detail.xhtml</to-view-id>
+            <redirect>
+                <view-param>
+                    <name>buildId</name>
+                    <value>#{searchBean.buildId}</value>
+                </view-param>
+            </redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>toAppConfig</from-outcome>
+            <to-view-id>/pages/admin/configure.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+</faces-config>

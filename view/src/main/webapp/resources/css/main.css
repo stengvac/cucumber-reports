@@ -1,0 +1,81 @@
+.bs-callout {
+    padding: 10px 10px 0px 10px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+    font-size: medium;
+}
+.bs-callout h1 {
+    margin: 0 10px 0 10px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout > .row {
+    padding-left: 25px;
+}
+.bs-callout > .row > .col-md-8 {
+    margin-left: 0;
+    padding-left: 0;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-success {
+    border-left-color: #5cb85c;
+}
+.bs-callout-success h1 {
+    color: #5cb85c;
+}
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+.bs-callout-danger h1 {
+    color: #d9534f;
+}
+.bs-callout-row-padding {
+    padding-left: 15px;
+}
+.ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+    border-style: none;
+    text-align: left;
+}
+.bold {
+    font-weight: bold;
+}
+
+.fa-welcome-icons {
+    font-size: 28em;
+}
+
+.text-header {
+    color: #333;
+}
+
+.navbar-nav > li > form {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+#scenarioNames {
+    position: fixed;
+}
+
+.placeholder {
+    color: gray;
+}
+
+.data-embedded {
+    color: black;
+}
+.line-breaks {
+    white-space: pre;
+}
+
+body {
+    margin-bottom: 60px;
+}

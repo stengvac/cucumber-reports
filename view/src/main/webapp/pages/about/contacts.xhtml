@@ -1,0 +1,29 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <div class="col-sm-offset-3">
+            <h1>#{i18n_contacts['contacts.label']}</h1>
+
+            <h2>#{i18n_contacts['contacts.development.team.label']}</h2>
+            <div class="row">
+                <div class="col-sm-2">
+                    <strong>#{i18n_contacts['contacts.developer.label']}</strong>
+                </div>
+                <div class="col-sm-10">
+                    <h:outputLink value="mailto:#{i18n_contacts['contacts.cucumber.guru.mail']}">
+                        <f:param name="subject" value="Cucumber reports" />
+                        <h:outputText value="#{i18n_contacts['contacts.cucumber.guru.mail']}" />
+                    </h:outputLink>
+
+                </div>
+            </div>
+            <h2>#{i18n_contacts['contacts.devops.team.label']}</h2>
+            <strong>#{i18n_contacts['contacts.devops.message']}</strong>
+        </div>
+    </ui:define>
+
+</ui:composition>

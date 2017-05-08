@@ -1,0 +1,47 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <div class="container">
+            <h1>Welcome to Application Configuration section</h1>
+            <h2>
+                <small>Use this page only if you know what are you doing.</small>
+            </h2>
+
+            <h:form>
+                <div class="form-group">
+                    <p:outputLabel for="consoleUrl"
+                                   value="Logs URL pattern">
+                    </p:outputLabel>
+                    <p>
+                        This property is used to create link to logs created during build run so testers can look into them for more detailed info.
+                        To customize logs location logs location can be customized. Pattern can contain up to 2 placeholders.
+                        <br />
+                        <strong>Delete white space between $ and {} in placeholders.</strong>
+                        <dl class="dl-horizontal">
+                            <dt>$ {projectName}</dt>
+                            <dd>project name, which is build part of</dd>
+                            <dt>$ {sequentialNumber}</dt>
+                            <dd>of executed build</dd>
+                        </dl>
+
+                        <strong>Example: http://&lt;YOUR_DOMAIN&gt;/build/&#36; {projectName}/&#36; {sequentialNumber}/logs</strong>
+                        For executed build run with YOUR_DOMAIN=mydomanin.cz, projectName=myProject and sequentialNumber=5
+                        Will create link eq: <strong>http://mydomanin.cz/build/myProject/5/logs</strong>
+                    </p>
+                    <h:inputText id="consoleUrl"
+                                 class="form-control"
+                                 value="#{appConfigurationBean.appConfig.consoleUrlPattern}"/>
+
+                </div>
+
+                <p:commandButton value="Submit"
+                                 action="#{appConfigurationBean.submitChanges()}"/>
+            </h:form>
+
+        </div>
+    </ui:define>
+</ui:composition>
